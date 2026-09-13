@@ -800,7 +800,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (jackpotBadge) {
-            jackpotBadge.innerText = `TIÊU HAO ${consumedPoints} ĐIỂM HŨ • VẬN MAY KHỞI SẮC!`;
+            jackpotBadge.innerText = `TIÊU HAO ${consumedPoints} ĐIỂM HŨ • KHÍ VẬN KHỞI SẮC!`;
         }
         if (jackpotTierText) {
             jackpotTierText.innerText = eliminatedTierName;

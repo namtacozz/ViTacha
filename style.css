@@ -1493,7 +1493,7 @@ input:checked + .slider:before {
 }
 
 .jackpot-sparkles {
-    font-size: 32px;
+    font-size: 42px;
     margin-bottom: 8px;
     animation: jackpotSparklePulse 1s infinite alternate;
 }
