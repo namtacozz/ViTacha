@@ -718,8 +718,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     function getJackpotChance(points) {
-        // Tỉ lệ gốc 5% + scale 2% mỗi điểm tích lũy, tối đa 100%
-        return Math.min(100, Math.round((5 + points * 2) * 10) / 10);
+        // Tỉ lệ gốc 15% + scale 3% mỗi điểm tích lũy, tối đa 100%
+        return Math.min(100, Math.round((15 + points * 3) * 10) / 10);
     }
 
     function updateJarUI() {
@@ -728,7 +728,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (fortuneJarWrap) {
             const chance = getJackpotChance(state.fortuneJar.points);
-            fortuneJarWrap.title = `Hũ May Mắn: ${state.fortuneJar.points} điểm\nTỉ lệ Nổ Hũ hiện tại: ${chance}%\n(Tỉ lệ gốc 5% + 2%/điểm tích lũy. Nổ Hũ sẽ tiêu hao hết điểm để loại bỏ thẻ bậc thấp và tự động roll lại hòm cao cấp!)`;
+            fortuneJarWrap.title = `Hũ May Mắn: ${state.fortuneJar.points} điểm\nTỉ lệ Nổ Hũ hiện tại: ${chance}%\n(Tỉ lệ gốc 15% + 3%/điểm tích lũy. Nổ Hũ sẽ tiêu hao hết điểm để loại bỏ thẻ bậc thấp và tự động roll lại hòm cao cấp!)`;
         }
         try {
             localStorage.setItem('vitacha_jar_points', state.fortuneJar.points.toString());
@@ -846,8 +846,8 @@ document.addEventListener('DOMContentLoaded', () => {
             addJarPoint(1);
             jackpotChance = getJackpotChance(state.fortuneJar.points) / 100;
         } else {
-            // Roll xích nổ liên tục: điểm đã về 0, tỉ lệ gốc 5%
-            jackpotChance = 0.05;
+            // Roll xích nổ liên tục: điểm đã về 0, tỉ lệ gốc 15%
+            jackpotChance = 0.15;
         }
 
         spinRoulette({
@@ -870,13 +870,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (isJackpotHit) {
                     // NỔ HŨ THÀNH CÔNG!
-                    window.soundEngine.playCelebration();
+                    try {
+                        if (window.soundEngine && typeof window.soundEngine.playCelebration === 'function') {
+                            window.soundEngine.playCelebration();
+                        } else if (window.soundEngine && typeof window.soundEngine.playReveal === 'function') {
+                            window.soundEngine.playReveal('transcendent');
+                        }
+                    } catch (soundErr) {
+                        console.warn('Jackpot sound error:', soundErr);
+                    }
 
                     const consumed = state.fortuneJar.points;
                     state.fortuneJar.points = 0;
                     updateJarUI();
 
                     const eliminatedTierName = getTierDisplayName(winningItem, poolType);
+
+                    // Khóa toàn bộ nút trong thời gian thông báo nổ hũ hiển thị
+                    setAllButtonsDisabled(true);
 
                     showJackpotModal(consumed, eliminatedTierName, () => {
                         // Tự động roll lại với hòm mới loại bỏ các thẻ <= tier vừa roll!

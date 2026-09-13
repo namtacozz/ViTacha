@@ -539,6 +539,85 @@ class SoundEngine {
             console.warn('playTranscendentFanfare error:', e);
         }
     }
+
+    // Special Jackpot Celebration Fanfare (Nổ Hũ Vang Dội)
+    playCelebration() {
+        try {
+            this.init();
+            if (this.muted || !this.ctx) return;
+            const now = this.ctx.currentTime + 0.05;
+            const out = this.getGain(1.0);
+            if (!out) return;
+
+            // 1. Heavy bass impact
+            const boom = this.ctx.createOscillator();
+            const boomGain = this.ctx.createGain();
+            boom.type = 'triangle';
+            boom.frequency.setValueAtTime(160, now);
+            boom.frequency.exponentialRampToValueAtTime(35, now + 0.45);
+            boomGain.gain.setValueAtTime(0.9, now);
+            boomGain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+            boom.connect(boomGain);
+            boomGain.connect(out);
+            boom.start(now);
+            boom.stop(now + 0.85);
+
+            // 2. Energetic ascending casino arpeggio fanfare (C major -> F major -> G major triumph)
+            const arpNotes = [
+                { f: 523.25, t: 0.00 }, // C5
+                { f: 659.25, t: 0.07 }, // E5
+                { f: 783.99, t: 0.14 }, // G5
+                { f: 1046.50, t: 0.21 }, // C6
+                { f: 880.00, t: 0.28 }, // A5
+                { f: 1174.66, t: 0.35 }, // D6
+                { f: 1318.51, t: 0.42 }, // E6
+                { f: 1567.98, t: 0.49 }, // G6
+                { f: 2093.00, t: 0.58 }  // C7 (Peak)
+            ];
+
+            arpNotes.forEach(note => {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(3200, now);
+
+                const startT = now + note.t;
+                osc.frequency.setValueAtTime(note.f, startT);
+                gain.gain.setValueAtTime(0.35, startT);
+                gain.gain.exponentialRampToValueAtTime(0.001, startT + 1.2);
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(out);
+
+                osc.start(startT);
+                osc.stop(startT + 1.25);
+            });
+
+            // 3. Shimmering jackpot gold chime chords (sparkle trail)
+            const chimes = [1046.50, 1318.51, 1567.98, 2093.00];
+            [0.65, 0.85, 1.05].forEach((delay, step) => {
+                chimes.forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    const startT = now + delay + idx * 0.04;
+                    osc.frequency.setValueAtTime(freq * (1 + step * 0.15), startT);
+                    gain.gain.setValueAtTime(0.28, startT);
+                    gain.gain.exponentialRampToValueAtTime(0.001, startT + 1.5);
+                    osc.connect(gain);
+                    gain.connect(out);
+                    osc.start(startT);
+                    osc.stop(startT + 1.55);
+                });
+            });
+        } catch (e) {
+            console.warn('playCelebration error:', e);
+        }
+    }
 }
 
 window.soundEngine = new SoundEngine();
