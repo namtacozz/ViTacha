@@ -38,6 +38,19 @@
             </nav>
 
             <div class="nav-actions">
+                <!-- Hũ May Mắn (Fortune Jar) - Số lượng nằm bên trái cái lọ -->
+                <div class="fortune-jar-wrap" id="fortune-jar-wrap" title="Hũ May Mắn (Tích điểm khi roll, nổ để loại bỏ thẻ bậc thấp và tự động roll lại hòm xịn hơn!)">
+                    <span class="fortune-jar-count" id="fortune-jar-count">0</span>
+                    <div class="fortune-jar-icon-box">
+                        <svg class="fortune-jar-svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 3h6m-5 0v2m4-2v2" />
+                            <path d="M6 7h12c.6 0 1 .4 1 1v1c0 3.3-2.7 6-6 6h-2c-3.3 0-6-2.7-6-6V8c0-.6.4-1 1-1z" fill="rgba(235, 156, 0, 0.2)" />
+                            <path d="M7 14l1.2 5.2c.2.8.9 1.4 1.7 1.4h4.2c.8 0 1.5-.6 1.7-1.4L17 14" />
+                            <circle cx="12" cy="10" r="1.5" fill="var(--accent-gold)" stroke="none" />
+                        </svg>
+                    </div>
+                </div>
+
                 <button class="icon-btn" id="btn-open-settings" title="Cài đặt" aria-label="Cài đặt">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="3"></circle>
@@ -350,6 +363,26 @@
             <div class="directory-grid" id="directory-grid"></div>
         </section>
     </main>
+
+    <!-- ========================================================
+         JACKPOT ANNOUNCEMENT OVERLAY (NỔ HŨ THÀNH CÔNG)
+         ======================================================== -->
+    <div class="jackpot-overlay" id="jackpot-overlay">
+        <div class="jackpot-card" id="jackpot-card">
+            <div class="jackpot-sparkles">🏺 💥 ✨</div>
+            <h2 class="jackpot-title">NỔ HŨ THÀNH CÔNG!</h2>
+            <div class="jackpot-badge" id="jackpot-badge">TIÊU HAO 0 ĐIỂM HŨ</div>
+            <p class="jackpot-desc" id="jackpot-desc">
+                Đã kích hoạt vận may! Loại bỏ toàn bộ thẻ bậc <strong id="jackpot-tier-text">...</strong> trở xuống.
+            </p>
+            <div class="jackpot-countdown-bar">
+                <div class="jackpot-countdown-progress" id="jackpot-countdown-progress"></div>
+            </div>
+            <div class="jackpot-status-hint">
+                ⚡ Tự động Roll lại hòm mới với các thẻ bậc cao hơn...
+            </div>
+        </div>
+    </div>
 
     <!-- ========================================================
          WINNING REVEAL OVERLAY MODAL (OP.GG STYLE)

@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
             volume: 0.8
         },
         isSpinning: false,
+        fortuneJar: {
+            points: 0
+        },
         compFlow: {
             step: 1,
             selectedChampion: null,
@@ -32,6 +35,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } catch (e) {
         console.warn('Could not load settings:', e);
+    }
+
+    // Load saved Fortune Jar points
+    try {
+        const savedJar = localStorage.getItem('vitacha_jar_points');
+        if (savedJar) {
+            state.fortuneJar.points = Math.max(0, parseInt(savedJar, 10) || 0);
+        }
+    } catch (e) {
+        console.warn('Could not load jar points:', e);
     }
 
     // Apply audio state
@@ -683,65 +696,229 @@ document.addEventListener('DOMContentLoaded', () => {
     populateInitialTrack(trackClasses, window.CLASSES);
     populateInitialTrack(trackMerged, MERGED_TRAITS);
 
-    // Single "Mở Hòm" Buttons
-    document.getElementById('btn-open-champions').addEventListener('click', () => {
+    // ==========================================
+    // 7.5. CƠ CHẾ HŨ (FORTUNE JAR / JACKPOT)
+    // ==========================================
+    const fortuneJarWrap = document.getElementById('fortune-jar-wrap');
+    const fortuneJarCount = document.getElementById('fortune-jar-count');
+    const jackpotOverlay = document.getElementById('jackpot-overlay');
+    const jackpotBadge = document.getElementById('jackpot-badge');
+    const jackpotTierText = document.getElementById('jackpot-tier-text');
+    const jackpotProgress = document.getElementById('jackpot-countdown-progress');
+
+    const ORIGIN_TIER_ORDER = {
+        'common': 1,
+        'rare': 2,
+        'epic': 3,
+        'heritage': 4,
+        'legendary': 5,
+        'ultimate': 6,
+        'mythic': 7,
+        'transcendent': 8
+    };
+
+    function getJackpotChance(points) {
+        // Tỉ lệ gốc 5% + scale 2% mỗi điểm tích lũy, tối đa 100%
+        return Math.min(100, Math.round((5 + points * 2) * 10) / 10);
+    }
+
+    function updateJarUI() {
+        if (fortuneJarCount) {
+            fortuneJarCount.innerText = state.fortuneJar.points;
+        }
+        if (fortuneJarWrap) {
+            const chance = getJackpotChance(state.fortuneJar.points);
+            fortuneJarWrap.title = `Hũ May Mắn: ${state.fortuneJar.points} điểm\nTỉ lệ Nổ Hũ hiện tại: ${chance}%\n(Tỉ lệ gốc 5% + 2%/điểm tích lũy. Nổ Hũ sẽ tiêu hao hết điểm để loại bỏ thẻ bậc thấp và tự động roll lại hòm cao cấp!)`;
+        }
+        try {
+            localStorage.setItem('vitacha_jar_points', state.fortuneJar.points.toString());
+        } catch (e) {
+            console.warn('Could not save jar points:', e);
+        }
+    }
+
+    function addJarPoint(amount = 1) {
+        state.fortuneJar.points += amount;
+        updateJarUI();
+        if (fortuneJarWrap) {
+            fortuneJarWrap.classList.remove('jar-bounce');
+            void fortuneJarWrap.offsetWidth;
+            fortuneJarWrap.classList.add('jar-bounce');
+        }
+    }
+
+    updateJarUI();
+
+    function getItemTierRank(item, poolType) {
+        if (!item) return 0;
+        // Champions: Cost 1 đến 5
+        if (item.cost !== undefined) {
+            return item.cost;
+        }
+        // Gộp Tộc & Hệ: coi hệ là tier Rare (rank 2)
+        if (poolType === 'merged') {
+            if (item.type === 'class') return 2;
+            const tierKey = item.tier || (item.rarity ? item.rarity.id : 'common');
+            return ORIGIN_TIER_ORDER[tierKey] || 1;
+        }
+        // Tộc riêng
+        if (poolType === 'origins') {
+            const tierKey = item.tier || (item.rarity ? item.rarity.id : 'common');
+            return ORIGIN_TIER_ORDER[tierKey] || 1;
+        }
+        // Hệ riêng (không nổ hũ)
+        return 1;
+    }
+
+    function getTierDisplayName(item, poolType) {
+        if (!item) return '';
+        if (item.cost !== undefined) {
+            const rName = item.rarity ? (item.rarity.nameVi || item.rarity.name) : '';
+            return `${rName} (${item.cost} Vàng)`;
+        }
+        if (poolType === 'merged' && item.type === 'class') {
+            return 'Hệ (Tương đương Rare)';
+        }
+        if (item.rarity) {
+            return item.rarity.nameVi || item.rarity.name;
+        }
+        return item.tier || 'Thường';
+    }
+
+    let jackpotCloseTimeout = null;
+
+    function showJackpotModal(consumedPoints, eliminatedTierName, onClosed) {
+        if (!jackpotOverlay) {
+            if (onClosed) onClosed();
+            return;
+        }
+
+        if (fortuneJarWrap) {
+            fortuneJarWrap.classList.remove('jar-burst');
+            void fortuneJarWrap.offsetWidth;
+            fortuneJarWrap.classList.add('jar-burst');
+        }
+
+        if (jackpotBadge) {
+            jackpotBadge.innerText = `TIÊU HAO ${consumedPoints} ĐIỂM HŨ • VẬN MAY KHỞI SẮC!`;
+        }
+        if (jackpotTierText) {
+            jackpotTierText.innerText = eliminatedTierName;
+        }
+
+        // Kích hoạt thanh đếm tiến trình 1.8s
+        if (jackpotProgress) {
+            jackpotProgress.style.transition = 'none';
+            jackpotProgress.style.transform = 'scaleX(1)';
+            void jackpotProgress.offsetWidth;
+            jackpotProgress.style.transition = 'transform 1.8s linear';
+            jackpotProgress.style.transform = 'scaleX(0)';
+        }
+
+        jackpotOverlay.classList.add('open');
+
+        let isClosed = false;
+        const doClose = () => {
+            if (isClosed) return;
+            isClosed = true;
+            if (jackpotCloseTimeout) {
+                clearTimeout(jackpotCloseTimeout);
+                jackpotCloseTimeout = null;
+            }
+            jackpotOverlay.classList.remove('open');
+            jackpotOverlay.removeEventListener('click', doClose);
+            setTimeout(() => {
+                if (onClosed) onClosed();
+            }, 200);
+        };
+
+        jackpotOverlay.addEventListener('click', doClose);
+        jackpotCloseTimeout = setTimeout(doClose, 1800);
+    }
+
+    function runClassicRoll(poolType, trackEl, containerEl, currentPool, weightFn, isChained = false) {
+        if (state.isSpinning) return;
+
+        // Tính tỉ lệ nổ hũ
+        let jackpotChance;
+        if (!isChained) {
+            // Roll thông thường: tích +1 điểm hũ trước khi tính tỉ lệ
+            addJarPoint(1);
+            jackpotChance = getJackpotChance(state.fortuneJar.points) / 100;
+        } else {
+            // Roll xích nổ liên tục: điểm đã về 0, tỉ lệ gốc 5%
+            jackpotChance = 0.05;
+        }
+
         spinRoulette({
-            trackEl: trackChampions,
-            containerEl: rouletteChampions,
-            pool: window.CHAMPIONS,
-            weightFn: getChampionWeight
+            trackEl,
+            containerEl,
+            pool: currentPool,
+            weightFn,
+            showModal: false, // Ta kiểm soát modal sau khi kiểm tra nổ hũ
+            duration: isChained ? 4500 : SPIN_DURATION,
+            onComplete: (winningItem) => {
+                // Rule: Không nổ hũ ở hòm hệ riêng lẻ
+                const canJackpot = (poolType !== 'classes');
+
+                const currentRank = getItemTierRank(winningItem, poolType);
+                const higherTierPool = currentPool.filter(item => getItemTierRank(item, poolType) > currentRank);
+
+                // Có thể nổ nếu hòm cho phép và còn thẻ bậc cao hơn
+                const hasHigherTier = canJackpot && (higherTierPool.length > 0);
+                const isJackpotHit = hasHigherTier && (Math.random() < jackpotChance);
+
+                if (isJackpotHit) {
+                    // NỔ HŨ THÀNH CÔNG!
+                    window.soundEngine.playCelebration();
+
+                    const consumed = state.fortuneJar.points;
+                    state.fortuneJar.points = 0;
+                    updateJarUI();
+
+                    const eliminatedTierName = getTierDisplayName(winningItem, poolType);
+
+                    showJackpotModal(consumed, eliminatedTierName, () => {
+                        // Tự động roll lại với hòm mới loại bỏ các thẻ <= tier vừa roll!
+                        runClassicRoll(poolType, trackEl, containerEl, higherTierPool, weightFn, true);
+                    });
+                } else {
+                    // Không nổ hũ hoặc đã đạt tier tối đa của hòm đó -> Vinh danh kết quả!
+                    showRevealModal(winningItem);
+                }
+            }
         });
+    }
+
+    // Single "Mở Hòm" Buttons with Fortune Jar Integration
+    document.getElementById('btn-open-champions').addEventListener('click', () => {
+        runClassicRoll('champions', trackChampions, rouletteChampions, window.CHAMPIONS, getChampionWeight);
     });
 
     const btnOpenCarries = document.getElementById('btn-open-carries');
     if (btnOpenCarries) {
         btnOpenCarries.addEventListener('click', () => {
-            spinRoulette({
-                trackEl: trackCarries,
-                containerEl: rouletteCarries,
-                pool: window.CARRY_CHAMPIONS,
-                weightFn: getChampionWeight
-            });
+            runClassicRoll('carries', trackCarries, rouletteCarries, window.CARRY_CHAMPIONS, getChampionWeight);
         });
     }
 
     const btnOpenTanks = document.getElementById('btn-open-tanks');
     if (btnOpenTanks) {
         btnOpenTanks.addEventListener('click', () => {
-            spinRoulette({
-                trackEl: trackTanks,
-                containerEl: rouletteTanks,
-                pool: window.TANK_CHAMPIONS,
-                weightFn: getChampionWeight
-            });
+            runClassicRoll('tanks', trackTanks, rouletteTanks, window.TANK_CHAMPIONS, getChampionWeight);
         });
     }
 
     document.getElementById('btn-open-origins').addEventListener('click', () => {
-        spinRoulette({
-            trackEl: trackOrigins,
-            containerEl: rouletteOrigins,
-            pool: window.ORIGINS,
-            weightFn: getOriginWeight
-        });
+        runClassicRoll('origins', trackOrigins, rouletteOrigins, window.ORIGINS, getOriginWeight);
     });
 
     document.getElementById('btn-open-classes').addEventListener('click', () => {
-        spinRoulette({
-            trackEl: trackClasses,
-            containerEl: rouletteClasses,
-            pool: window.CLASSES,
-            weightFn: getClassWeight
-        });
+        runClassicRoll('classes', trackClasses, rouletteClasses, window.CLASSES, getClassWeight);
     });
 
     document.getElementById('btn-open-merged').addEventListener('click', () => {
-        spinRoulette({
-            trackEl: trackMerged,
-            containerEl: rouletteMerged,
-            pool: MERGED_TRAITS,
-            weightFn: getMergedWeight
-        });
+        runClassicRoll('merged', trackMerged, rouletteMerged, MERGED_TRAITS, getMergedWeight);
     });
 
     // ==========================================
