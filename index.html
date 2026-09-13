@@ -39,7 +39,7 @@
 
             <div class="nav-actions">
                 <!-- Hũ May Mắn (Fortune Jar) - Số lượng nằm bên trái cái lọ -->
-                <div class="fortune-jar-wrap" id="fortune-jar-wrap" title="Hũ May Mắn (Tích điểm khi roll, nổ để loại bỏ thẻ bậc thấp và tự động roll lại hòm xịn hơn!)">
+                <div class="fortune-jar-wrap" id="fortune-jar-wrap" aria-describedby="fortune-jar-tooltip">
                     <span class="fortune-jar-count" id="fortune-jar-count">0</span>
                     <div class="fortune-jar-icon-box">
                         <svg class="fortune-jar-svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -48,6 +48,37 @@
                             <path d="M7 14l1.2 5.2c.2.8.9 1.4 1.7 1.4h4.2c.8 0 1.5-.6 1.7-1.4L17 14" />
                             <circle cx="12" cy="10" r="1.5" fill="var(--accent-gold)" stroke="none" />
                         </svg>
+                    </div>
+
+                    <!-- Popover Tooltip Xem Hướng Dẫn Hũ May Mắn Khi Rê Chuột -->
+                    <div class="fortune-jar-tooltip" id="fortune-jar-tooltip">
+                        <div class="fjt-header">
+                            <div class="fjt-title">🏺 HŨ MAY MẮN</div>
+                            <span class="fjt-badge" id="tooltip-jar-chance-badge">TỈ LỆ: 15%</span>
+                        </div>
+                        <div class="fjt-stats">
+                            <span>Điểm tích lũy: <strong id="tooltip-jar-points-val" class="fjt-gold">0</strong></span>
+                            <span class="fjt-muted">(15% base + 3%/điểm)</span>
+                        </div>
+                        <div class="fjt-divider"></div>
+                        <div class="fjt-rules">
+                            <div class="fjt-rule-item">
+                                <span class="fjt-bullet">⚡</span>
+                                <span>Mỗi lần roll ở tab <strong>Cổ Điển</strong> tích <strong>+1 điểm</strong> vào Hũ.</span>
+                            </div>
+                            <div class="fjt-rule-item">
+                                <span class="fjt-bullet">💥</span>
+                                <span><strong>Nổ Hũ</strong>: Tiêu hao hết điểm về 0, <strong>loại bỏ toàn bộ thẻ bậc &le; bậc thẻ vừa trúng</strong> và tự động roll lại hòm mới cao cấp hơn!</span>
+                            </div>
+                            <div class="fjt-rule-item">
+                                <span class="fjt-bullet">🔄</span>
+                                <span><strong>Nổ liên hoàn</strong>: Sau khi nổ, các lượt roll lại vẫn có <strong>15%</strong> cơ hội tiếp tục nổ hũ cho đến khi đạt thẻ bậc cao nhất có thể của hòm.</span>
+                            </div>
+                            <div class="fjt-rule-item">
+                                <span class="fjt-bullet">⚠️</span>
+                                <span>Hòm Hệ riêng <strong>không nổ hũ</strong>. Hòm Gộp Tộc &amp; Hệ cho phép nổ (các thẻ Hệ được tính tương đương bậc <strong>Rare</strong>).</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

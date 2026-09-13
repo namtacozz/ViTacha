@@ -717,6 +717,9 @@ document.addEventListener('DOMContentLoaded', () => {
         'transcendent': 8
     };
 
+    const tooltipJarChanceBadge = document.getElementById('tooltip-jar-chance-badge');
+    const tooltipJarPointsVal = document.getElementById('tooltip-jar-points-val');
+
     function getJackpotChance(points) {
         // Tỉ lệ gốc 15% + scale 3% mỗi điểm tích lũy, tối đa 100%
         return Math.min(100, Math.round((15 + points * 3) * 10) / 10);
@@ -726,9 +729,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (fortuneJarCount) {
             fortuneJarCount.innerText = state.fortuneJar.points;
         }
+        const chance = getJackpotChance(state.fortuneJar.points);
+        if (tooltipJarPointsVal) {
+            tooltipJarPointsVal.innerText = state.fortuneJar.points;
+        }
+        if (tooltipJarChanceBadge) {
+            tooltipJarChanceBadge.innerText = `TỈ LỆ: ${chance}%`;
+        }
         if (fortuneJarWrap) {
-            const chance = getJackpotChance(state.fortuneJar.points);
-            fortuneJarWrap.title = `Hũ May Mắn: ${state.fortuneJar.points} điểm\nTỉ lệ Nổ Hũ hiện tại: ${chance}%\n(Tỉ lệ gốc 15% + 3%/điểm tích lũy. Nổ Hũ sẽ tiêu hao hết điểm để loại bỏ thẻ bậc thấp và tự động roll lại hòm cao cấp!)`;
+            fortuneJarWrap.title = `Hũ May Mắn: ${state.fortuneJar.points} điểm (Tỉ lệ nổ: ${chance}%)\n• Tích +1 điểm khi roll ở Cổ Điển.\n• Nổ hũ: Tiêu hao hết điểm về 0, loại bỏ thẻ bậc ≤ bậc vừa trúng và roll lại hòm mới cao cấp hơn.\n• Nổ liên hoàn: Vẫn có 15% cơ hội nổ tiếp đến khi đạt bậc kịch kim.\n• Hòm Hệ riêng không nổ hũ. Hòm Gộp tính Hệ là Rare.`;
         }
         try {
             localStorage.setItem('vitacha_jar_points', state.fortuneJar.points.toString());
