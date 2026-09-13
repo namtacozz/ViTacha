@@ -28,10 +28,23 @@
     --color-transcendent: #FFFFFF; /* Transcendent pure white */
 }
 
+html {
+    zoom: 1.25;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+}
+
+/* Riêng ảnh Lux căn giữa vì nhân vật nằm ở trung tâm ảnh */
+img[src*="Lux"],
+.r-card[data-id="lux"] .r-card-img,
+.dir-card[data-id="lux"] .dir-card-img,
+.comp-summary-card[data-id="lux"] .comp-card-img,
+.opgg-hero-img[src*="Lux"] {
+    object-position: center center !important;
 }
 
 body {
