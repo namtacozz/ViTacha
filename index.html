@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hột Vịt Lộn | TFT Gacha</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="logo-group">
+                <img src="Logo/Logo.jpg" alt="Logo" class="logo-img" id="btn-logo-home">
+                <a href="https://www.facebook.com/vitcontapsuy" target="_blank" rel="noopener noreferrer" class="logo-author-link" title="Facebook cá nhân">Hột Vịt Lộn</a>
+                <span class="logo-divider">|</span>
+                <span class="logo-text">TFT Gacha</span>
+            </div>
+
+            <!-- Main Tabs (No Emotes) -->
+            <nav class="nav-tabs">
+                <button class="nav-tab-btn active" data-tab="classic">
+                    Cổ Điển
+                </button>
+                <button class="nav-tab-btn" data-tab="comp">
+                    Bí Bài
+                </button>
+                <button class="nav-tab-btn" data-tab="combo">
+                    Nổ
+                </button>
+                <button class="nav-tab-btn" data-tab="directory">
+                    Bể Roll
+                </button>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="icon-btn" id="btn-open-settings" title="Cài đặt" aria-label="Cài đặt">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main class="main-wrapper">
+        <!-- ========================================================
+             TAB 1: CỔ ĐIỂN (CLASSIC MODE - 3 CASES STACKED VERTICALLY)
+             ======================================================== -->
+        <section id="tab-content-classic" class="tab-view">
+            <!-- 1. TƯỚNG (65 TƯỚNG) - Mặc định khi chưa bật tách -->
+            <div class="case-section" id="case-section-champions">
+                <div class="case-header">
+                    <div class="case-title-group">
+                        <h2 class="case-title">Tướng</h2>
+                        <span class="case-count-pill">65 Tướng</span>
+                    </div>
+                </div>
+                <div class="roulette-container" id="roulette-champions">
+                    <div class="roulette-center-line"></div>
+                    <div class="roulette-vignette"></div>
+                    <div class="roulette-track" id="track-champions"></div>
+                </div>
+                <div class="case-actions">
+                    <button class="btn-open-case" id="btn-open-champions">
+                        Roll
+                    </button>
+                </div>
+            </div>
+
+            <!-- 1a. CARRY (42 TƯỚNG) - Hiển thị khi BẬT Tách Tướng -->
+            <div class="case-section" id="case-section-carries" style="display: none;">
+                <div class="case-header">
+                    <div class="case-title-group">
+                        <h2 class="case-title">Carry</h2>
+                        <span class="case-count-pill">42 Tướng</span>
+                    </div>
+                </div>
+                <div class="roulette-container" id="roulette-carries">
+                    <div class="roulette-center-line"></div>
+                    <div class="roulette-vignette"></div>
+                    <div class="roulette-track" id="track-carries"></div>
+                </div>
+                <div class="case-actions">
+                    <button class="btn-open-case" id="btn-open-carries">
+                        Roll
+                    </button>
+                </div>
+            </div>
+
+            <!-- 1b. TANKER (23 TƯỚNG) - Hiển thị khi BẬT Tách Tướng -->
+            <div class="case-section" id="case-section-tanks" style="display: none;">
+                <div class="case-header">
+                    <div class="case-title-group">
+                        <h2 class="case-title">Tanker</h2>
+                        <span class="case-count-pill">23 Tướng</span>
+                    </div>
+                </div>
+                <div class="roulette-container" id="roulette-tanks">
+                    <div class="roulette-center-line"></div>
+                    <div class="roulette-vignette"></div>
+                    <div class="roulette-track" id="track-tanks"></div>
+                </div>
+                <div class="case-actions">
+                    <button class="btn-open-case" id="btn-open-tanks">
+                        Roll
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. TỘC (24 TỘC) - Ẩn khi bật gộp -->
+            <div class="case-section" id="case-section-origins">
+                <div class="case-header">
+                    <div class="case-title-group">
+                        <h2 class="case-title">Tộc</h2>
+                        <span class="case-count-pill">24 Tộc</span>
+                    </div>
+                </div>
+                <div class="roulette-container" id="roulette-origins">
+                    <div class="roulette-center-line"></div>
+                    <div class="roulette-vignette"></div>
+                    <div class="roulette-track" id="track-origins"></div>
+                </div>
+                <div class="case-actions">
+                    <button class="btn-open-case" id="btn-open-origins">
+                        Roll
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. HỆ (12 HỆ) - Ẩn khi bật gộp -->
+            <div class="case-section" id="case-section-classes">
+                <div class="case-header">
+                    <div class="case-title-group">
+                        <h2 class="case-title">Hệ</h2>
+                        <span class="case-count-pill">12 Hệ</span>
+                    </div>
+                </div>
+                <div class="roulette-container" id="roulette-classes">
+                    <div class="roulette-center-line"></div>
+                    <div class="roulette-vignette"></div>
+                    <div class="roulette-track" id="track-classes"></div>
+                </div>
+                <div class="case-actions">
+                    <button class="btn-open-case" id="btn-open-classes">
+                        Roll
+                    </button>
+                </div>
+            </div>
+
+            <!-- GỘP TỘC & HỆ (36 THẺ) - Chỉ hiển thị khi bật gộp trong Cài đặt -->
+            <div class="case-section" id="case-section-merged" style="display: none;">
+                <div class="case-header">
+                    <div class="case-title-group">
+                        <h2 class="case-title">Tộc & Hệ</h2>
+                        <span class="case-count-pill">36 Thẻ</span>
+                    </div>
+                </div>
+                <div class="roulette-container" id="roulette-merged">
+                    <div class="roulette-center-line"></div>
+                    <div class="roulette-vignette"></div>
+                    <div class="roulette-track" id="track-merged"></div>
+                </div>
+                <div class="case-actions">
+                    <button class="btn-open-case" id="btn-open-merged">
+                        Roll
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================
+             TAB 2: BÍ BÀI (COMP BUILDER / META ROLL MODE)
+             ======================================================== -->
+        <section id="tab-content-comp" class="tab-view" style="display: none;">
+            <div class="comp-builder-card">
+                <!-- Description banner explaining odds synergy -->
+                <div class="comp-info-banner">
+                    <div class="comp-info-badge">CƠ CHẾ CỘNG HƯỞNG TỈ LỆ</div>
+                    <div class="comp-info-text">
+                        Mỗi thẻ được roll ra sẽ tự động <strong>tái tính toán và gia tăng tỉ lệ</strong> cho các thẻ tiếp theo dựa trên: 
+                        <strong>tương thích Tộc/Hệ</strong>, <strong>giá vàng tương đương</strong> và <strong>nằm cùng bài Meta TFT</strong>!
+                    </div>
+                </div>
+
+                <!-- Step Indicator Bar -->
+                <div class="step-indicator-bar" id="comp-step-bar">
+                    <div class="step-pill active" id="pill-step-1">
+                        <span class="step-number">1</span>
+                        <span>Carry</span>
+                    </div>
+                    <div class="step-pill" id="pill-step-tank" style="display: none;">
+                        <span class="step-number">2</span>
+                        <span>Tanker</span>
+                    </div>
+                    <div class="step-pill" id="pill-step-2">
+                        <span class="step-number" id="pill-step-2-num">2</span>
+                        <span id="pill-step-2-text">Tộc</span>
+                    </div>
+                    <div class="step-pill" id="pill-step-3">
+                        <span class="step-number" id="pill-step-3-num">3</span>
+                        <span>Hệ</span>
+                    </div>
+                </div>
+
+                <!-- Guided Active Roulette Area -->
+                <div class="roulette-container" id="roulette-comp-step">
+                    <div class="roulette-center-line"></div>
+                    <div class="roulette-vignette"></div>
+                    <div class="roulette-track" id="track-comp-step"></div>
+                </div>
+
+                <div class="case-actions" style="margin-top: 20px;">
+                    <button class="btn-open-case" id="btn-comp-action">
+                        Roll
+                    </button>
+                </div>
+
+                <!-- Bảng Tổng Kết (Summary Board) -->
+                <div class="comp-summary-board" id="comp-summary-board" style="display: none;">
+                    <h3 class="comp-summary-title">BẢNG TỔNG KẾT BÀI ĐẤU</h3>
+                    
+                    <!-- Dynamic separate cards: Carry, Tank (if split), Origin, Class -->
+                    <div class="comp-summary-heroes-container" id="comp-summary-heroes-container"></div>
+
+                    <button class="btn-open-case btn-secondary" id="btn-comp-reset">
+                        Roll Bộ Khung Mới
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================
+             TAB: NỔ (CASCADE COMBO ROLL - TỘC ➜ HỆ ➜ TƯỚNG)
+             ======================================================== -->
+        <section id="tab-content-combo" class="tab-view" style="display: none;">
+            <div class="combo-builder-wrapper">
+                <!-- Giai Đoạn 1: Tộc -->
+                <div class="case-section combo-stage-card active-stage" id="combo-stage-1">
+                    <div class="case-header">
+                        <div class="case-title-group">
+                            <h2 class="case-title">1: Tộc Mở Màn</h2>
+                            <span class="case-count-pill" id="combo-stage-1-pill">14 Thẻ (Gồm Thẻ Độc Nhất)</span>
+                        </div>
+                    </div>
+                    <div class="roulette-container" id="roulette-combo-origin">
+                        <div class="roulette-center-line"></div>
+                        <div class="roulette-vignette"></div>
+                        <div class="roulette-track" id="track-combo-origin"></div>
+                    </div>
+                    <div class="case-actions">
+                        <button class="btn-open-case" id="btn-combo-start">
+                            Nổ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Giai Đoạn 2: Hệ / Tướng Độc Nhất (Ẩn ban đầu) -->
+                <div class="case-section combo-stage-card" id="combo-stage-2" style="display: none; margin-top: 32px;">
+                    <div class="case-header">
+                        <div class="case-title-group">
+                            <h2 class="case-title" id="combo-stage-2-title">2: Hệ Tương Thích</h2>
+                            <span class="case-count-pill" id="combo-stage-2-pill">Đang chuẩn bị...</span>
+                        </div>
+                        <div class="combo-lock-badge" id="combo-stage-2-lock-badge">
+                            <!-- Chốt Tộc: [Icon] [Tên Tộc] -->
+                        </div>
+                    </div>
+                    <div class="roulette-container" id="roulette-combo-stage2">
+                        <div class="roulette-center-line"></div>
+                        <div class="roulette-vignette"></div>
+                        <div class="roulette-track" id="track-combo-stage2"></div>
+                    </div>
+                    <div class="combo-status-text" id="combo-stage-2-status">
+                        ⚡ Đang tự động quay 2...
+                    </div>
+                </div>
+
+                <!-- Giai Đoạn 3: Tướng Chốt Hạ (24 Thẻ - Ẩn ban đầu, chỉ hiện khi >1 tướng) -->
+                <div class="case-section combo-stage-card" id="combo-stage-3" style="display: none; margin-top: 32px;">
+                    <div class="case-header">
+                        <div class="case-title-group">
+                            <h2 class="case-title" id="combo-stage-3-title">3: Chốt Hạ Tướng</h2>
+                            <span class="case-count-pill" id="combo-stage-3-pill">24 Thẻ Cân Bằng</span>
+                        </div>
+                        <div class="combo-lock-badge" id="combo-stage-3-lock-badge">
+                            <!-- Chốt Cặp Tộc & Hệ -->
+                        </div>
+                    </div>
+                    <div class="roulette-container" id="roulette-combo-stage3">
+                        <div class="roulette-center-line"></div>
+                        <div class="roulette-vignette"></div>
+                        <div class="roulette-track" id="track-combo-stage3"></div>
+                    </div>
+                    <div class="combo-status-text" id="combo-stage-3-status">
+                        🎯 Đang tự động quay chọn tướng thắng cuộc...
+                    </div>
+                </div>
+
+                <!-- Nút Kích Hoạt Nổ Lại -->
+                <div style="text-align: center; margin-top: 32px; display: none;" id="combo-reset-wrap">
+                    <button class="btn-open-case btn-secondary" id="btn-combo-reset" style="padding: 12px 32px; font-size: 15px;">
+                        Nổ Lượt Mới
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================
+             TAB 3: BỂ ROLL (DIRECTORY & CASE CONTENTS)
+             ======================================================== -->
+        <section id="tab-content-directory" class="tab-view" style="display: none;">
+            <div class="directory-controls">
+                <div style="display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                    <!-- Category Filters (including Carry & Tank) -->
+                    <div class="filter-row">
+                        <button class="filter-btn active" data-dir-type="all">Tất Cả (101)</button>
+                        <button class="filter-btn" data-dir-type="champions">Tất Cả Tướng (65)</button>
+                        <button class="filter-btn" data-dir-type="carries">Carry (42)</button>
+                        <button class="filter-btn" data-dir-type="tanks">Tanker (23)</button>
+                        <button class="filter-btn" data-dir-type="origins">Tộc (24)</button>
+                        <button class="filter-btn" data-dir-type="classes">Hệ (12)</button>
+                    </div>
+
+                    <!-- Search Input -->
+                    <input type="text" class="search-box" id="dir-search-input" placeholder="Tìm kiếm tướng, tộc, hệ...">
+                </div>
+
+                <!-- Tier Filters -->
+                <div class="filter-row" id="tier-filter-row">
+                    <button class="filter-btn active" data-dir-tier="all">Tất Cả Bậc</button>
+                    <button class="filter-btn" data-dir-tier="common" style="color: var(--color-common);">Common</button>
+                    <button class="filter-btn" data-dir-tier="rare" style="color: var(--color-rare);">Rare</button>
+                    <button class="filter-btn" data-dir-tier="epic" style="color: var(--color-epic);">Epic</button>
+                    <button class="filter-btn" data-dir-tier="heritage" style="color: var(--color-heritage);">Heritage</button>
+                    <button class="filter-btn" data-dir-tier="legendary" style="color: var(--color-legendary);">Legendary</button>
+                    <button class="filter-btn" data-dir-tier="ultimate" style="color: var(--color-ultimate);">Ultimate</button>
+                    <button class="filter-btn" data-dir-tier="mythic" style="color: var(--color-mythic);">Mythic</button>
+                    <button class="filter-btn" data-dir-tier="transcendent" style="color: var(--color-transcendent);">Transcendent</button>
+                </div>
+            </div>
+
+            <!-- Grid Items Container -->
+            <div class="directory-grid" id="directory-grid"></div>
+        </section>
+    </main>
+
+    <!-- ========================================================
+         WINNING REVEAL OVERLAY MODAL (OP.GG STYLE)
+         ======================================================== -->
+    <div class="modal-backdrop" id="reveal-backdrop">
+        <canvas id="confetti-canvas"></canvas>
+        <div class="modal-container" id="reveal-modal-container">
+            <button class="modal-close-btn" id="btn-close-reveal" title="Đóng">✕</button>
+            <div class="opgg-reveal-card" id="reveal-card-body">
+                <!-- Injected via JavaScript -->
+            </div>
+            <div class="modal-hint-dismiss" id="reveal-hint-dismiss">Nhấp ra ngoài hoặc bấm ESC để tiếp tục</div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         SETTINGS MODAL
+         ======================================================== -->
+    <div class="modal-backdrop" id="settings-backdrop">
+        <div class="settings-modal" id="settings-modal-content">
+            <div class="settings-header">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    <h3 class="settings-title">Cài Đặt</h3>
+                </div>
+                <button class="icon-btn" id="btn-close-settings" style="width: 32px; height: 32px;">✕</button>
+            </div>
+
+            <div class="settings-item">
+                <div class="settings-label-group">
+                    <span class="settings-label">Gộp Tộc & Hệ</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="setting-toggle-merge">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="settings-item">
+                <div class="settings-label-group">
+                    <span class="settings-label">Tách Chủ Lực & Tank</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="setting-toggle-split-roles">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="settings-item">
+                <div class="settings-label-group">
+                    <span class="settings-label">Áp dụng Meta</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="setting-toggle-meta" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="settings-item">
+                <div class="settings-label-group">
+                    <span class="settings-label">Âm thanh</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="setting-toggle-sound" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="settings-item" style="border-bottom: none;">
+                <div class="settings-label-group">
+                    <span class="settings-label">Âm lượng</span>
+                </div>
+                <input type="range" id="setting-volume-slider" min="0" max="1" step="0.05" value="0.8" style="width: 140px;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="data.js"></script>
+    <script src="audio.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
