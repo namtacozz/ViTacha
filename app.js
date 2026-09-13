@@ -437,9 +437,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const revealHintDismiss = document.getElementById('reveal-hint-dismiss');
     const confettiCanvas = document.getElementById('confetti-canvas');
     let confettiAnimation = null;
+    let revealCountdownInterval = null;
+    let revealOnCloseCallback = null;
 
-    function showRevealModal(item) {
+    function showRevealModal(item, options = {}) {
         if (!item) return;
+
+        // Clear any active countdown timer & register callback
+        if (revealCountdownInterval) {
+            clearInterval(revealCountdownInterval);
+            revealCountdownInterval = null;
+        }
+        revealOnCloseCallback = (options && typeof options.onClose === 'function') ? options.onClose : null;
 
         const isChamp = !item.type;
         const tier = item.tier || (item.rarity ? item.rarity.id : 'common');
@@ -534,6 +543,31 @@ document.addEventListener('DOMContentLoaded', () => {
             revealCardBody.innerHTML = html;
             revealCardBody.style.borderColor = color;
             revealBackdrop.classList.add('open');
+
+            // Countdown timer if autoCloseSeconds is set
+            if (options && options.autoCloseSeconds && options.autoCloseSeconds > 0) {
+                let remaining = options.autoCloseSeconds;
+                const updateHintText = () => {
+                    if (revealHintDismiss) {
+                        revealHintDismiss.innerHTML = `Tự động tiếp tục sau <span style="color: var(--accent-gold); font-weight: 700; font-size: 14px;">${remaining}s</span> (hoặc ESC / nhấp ra ngoài)`;
+                    }
+                };
+                updateHintText();
+                revealCountdownInterval = setInterval(() => {
+                    remaining--;
+                    if (remaining <= 0) {
+                        clearInterval(revealCountdownInterval);
+                        revealCountdownInterval = null;
+                        closeRevealModal();
+                    } else {
+                        updateHintText();
+                    }
+                }, 1000);
+            } else {
+                if (revealHintDismiss) {
+                    revealHintDismiss.innerText = 'Nhấp ra ngoài hoặc bấm ESC để tiếp tục';
+                }
+            }
         } catch (domErr) {
             console.error('Error displaying reveal modal:', domErr);
         }
@@ -556,12 +590,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function closeRevealModal() {
+        if (revealCountdownInterval) {
+            clearInterval(revealCountdownInterval);
+            revealCountdownInterval = null;
+        }
+
+        const wasOpen = revealBackdrop.classList.contains('open');
         revealBackdrop.classList.remove('open');
         stopConfetti();
+
+        if (revealHintDismiss) {
+            revealHintDismiss.innerText = 'Nhấp ra ngoài hoặc bấm ESC để tiếp tục';
+        }
 
         // If comp summary board is active in Tab 2, smoothly scroll into view
         if (state.activeTab === 'comp' && compSummaryBoard && compSummaryBoard.style.display === 'flex') {
             compSummaryBoard.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Trigger callback if registered
+        if (wasOpen && revealOnCloseCallback) {
+            const cb = revealOnCloseCallback;
+            revealOnCloseCallback = null;
+            cb();
         }
     }
 
@@ -869,10 +920,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Populate initial comp track
     updateCompUI();
 
-    btnCompAction.addEventListener('click', () => {
+    function executeCompStep(autoContinue = false) {
         if (state.isSpinning) return;
         const config = getCompStepConfig();
         if (!config) return;
+
+        const isCarryStep = (config.stepKey === 'carry');
 
         spinRoulette({
             trackEl: trackCompStep,
@@ -880,6 +933,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pool: config.pool,
             weightFn: config.weightFn,
             biasArgs: config.biasArgs,
+            showModal: false, // We control the reveal modal explicitly
             onComplete: (item) => {
                 if (config.stepKey === 'carry') {
                     state.compFlow.selectedChampion = item;
@@ -901,10 +955,38 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.compFlow.selectedClass = item;
                     state.compFlow.step = state.settings.splitRoles ? 5 : 4; // Complete!
                 }
+
                 // Chuyển bước và cập nhật bể roll ngay lập tức!
                 updateCompUI();
+
+                if (isCarryStep) {
+                    // Sau khi hiện overlay roll tướng chủ lực đầu tiên thì overlay sẽ tự ẩn đi sau đếm ngược 3s
+                    // hoặc player tự esc hoặc click chuột ngoài overlay để ẩn ngay, sau khi ẩn sẽ tự động roll tiếp tục các hòm sau đến khi hết chốt bài luôn
+                    showRevealModal(item, {
+                        autoCloseSeconds: 3,
+                        onClose: () => {
+                            if (state.activeTab === 'comp' && getCompStepConfig()) {
+                                setTimeout(() => {
+                                    executeCompStep(true);
+                                }, 400);
+                            }
+                        }
+                    });
+                } else if (autoContinue) {
+                    // Tự động roll tiếp tục các hòm sau đến khi hết chốt bài luôn
+                    const nextConfig = getCompStepConfig();
+                    if (nextConfig && state.activeTab === 'comp') {
+                        setTimeout(() => {
+                            executeCompStep(true);
+                        }, 700);
+                    }
+                }
             }
         });
+    }
+
+    btnCompAction.addEventListener('click', () => {
+        executeCompStep(false);
     });
 
     // Render Bảng Tổng Kết (Summary Board with separate cards side-by-side)
@@ -993,6 +1075,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     btnCompReset.addEventListener('click', () => {
+        if (revealCountdownInterval) {
+            clearInterval(revealCountdownInterval);
+            revealCountdownInterval = null;
+        }
+        revealOnCloseCallback = null;
         state.compFlow.step = 1;
         state.compFlow.selectedChampion = null;
         state.compFlow.selectedTank = null;
